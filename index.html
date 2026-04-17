@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inktruders - Live Product</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div id="product-card" class="glass p-8 rounded-3xl shadow-2xl max-w-md w-full hidden">
+        <div class="relative">
+            <span class="absolute -top-4 -left-4 bg-green-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Live Now</span>
+            <img id="p-image" src="" alt="Producto" class="w-full h-64 object-cover rounded-2xl mb-6 shadow-lg">
+        </div>
+        
+        <h1 id="p-name" class="text-3xl font-black mb-2 tracking-tight">Cargando...</h1>
+        <p id="p-description" class="text-slate-400 mb-6 text-sm leading-relaxed"></p>
+        
+        <div class="flex items-center justify-between">
+            <span id="p-price" class="text-3xl font-mono font-bold text-green-400"></span>
+            <button class="bg-white text-black px-6 py-2 rounded-xl font-bold hover:bg-green-400 transition-colors">
+                Comprar
+            </button>
+        </div>
+    </div>
+
+    <div id="loader" class="text-slate-500 font-mono">Conectando con PolyStore API...</div>
+
+    <script>
+        async function fetchLiveProduct() {
+            try {
+                // CAMBIA ESTO por tu puerto real de la API
+                const response = await fetch('https://localhost:7057/api/products'); 
+                const products = await response.json();
+                
+                // Buscamos el que tenga Status 1 (Live)
+                const liveProduct = products.find(p => p.status === 1);
+
+                if (liveProduct) {
+                    document.getElementById('p-name').innerText = liveProduct.name;
+                    document.getElementById('p-description').innerText = liveProduct.description;
+                    document.getElementById('p-price').innerText = `${liveProduct.price}€`;
+                    document.getElementById('p-image').src = liveProduct.mainImageUrl || 'https://via.placeholder.com/400';
+                    
+                    document.getElementById('loader').classList.add('hidden');
+                    document.getElementById('product-card').classList.remove('hidden');
+                } else {
+                    document.getElementById('loader').innerText = "No hay ningún producto 'Live' actualmente.";
+                }
+            } catch (error) {
+                document.getElementById('loader').innerText = "Error: ¿Está la API encendida y el CORS configurado?";
+                console.error(error);
+            }
+        }
+
+        fetchLiveProduct();
+    </script>
+</body>
+</html>
