@@ -1,11 +1,11 @@
 const CONFIG = {
-    API_URL: 'https://localhost:7129/api' 
+    API_URL: 'https://localhost:7129/api'
 };
 
 async function fetchArchivedProducts() {
     try {
         const response = await fetch(`${CONFIG.API_URL}/products/archived`);
-        
+
         if (!response.ok) {
             throw new Error(`Error en la API: ${response.status}`);
         }
@@ -25,10 +25,11 @@ async function fetchArchivedProducts() {
         products.forEach(p => {
             const card = `
                 <div class="product-grid-card rounded-xl overflow-hidden flex flex-col h-full">
-                    <img src="${p.mainImageUrl || 'https://via.placeholder.com/400'}" 
-                         class="w-full h-56 object-cover" 
-                         alt="${p.name}">
-                    
+                    <a href="product-detail.html?id=${p.id}">
+                        <img src="${p.mainImageUrl || 'https://via.placeholder.com/400'}" 
+                            class="w-full h-56 object-cover" 
+                            alt="${p.name}">
+                    </a>
                     <div class="p-6 flex flex-col flex-grow">
                         <h3 class="text-xl font-bold mb-2 text-white">${p.name}</h3>
                         <p class="text-gray-400 text-sm flex-grow mb-4">${p.description}</p>
@@ -41,6 +42,11 @@ async function fetchArchivedProducts() {
                                 Ref: ${p.id.toString().slice(0, 8)}
                             </span>
                         </div>
+                        <a href="product-detail.html?id=${p.id}" 
+                            class="inline-block mt-4 text-sm font-bold underline" 
+                            style="color: ${p.accentColor}">
+                            VER DETALLES
+                        </a>
                     </div>
                 </div>
             `;
