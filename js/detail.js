@@ -21,7 +21,7 @@ async function fetchProductDetail() {
         const container = document.getElementById('detail-container');
         container.innerHTML = `
             <div class="rounded-3xl overflow-hidden shadow-2xl">
-                <img src="${p.mainImageUrl}" class="w-full h-auto object-cover" alt="${p.name}">
+                <img src="${p.mainImage}" class="w-full h-auto object-cover" alt="${p.name}">
             </div>
             <div class="space-y-6">
                 <h1 class="text-6xl font-black uppercase tracking-tighter">${p.name}</h1>

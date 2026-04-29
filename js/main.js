@@ -35,11 +35,11 @@ async function fetchLiveProduct() {
             if (priceElement) priceElement.style.color = liveProduct.accentColor;
 
             //B. El boton: Cambia el fondo
-            const buyBotton = document.getElementById('button');
-            if(buyBotton){
-                buyBotton.style.backgroundColor = liveProduct.accentColor;
+            const buyButton = document.getElementById('button');
+            if(buyButton){
+                buyButton.style.backgroundColor = liveProduct.accentColor;
                 //Fuerza color blanco en el texto del boton
-                buyBotton.style.color = '#ffffff'
+                buyButton.style.color = '#ffffff'
             } 
         }
 

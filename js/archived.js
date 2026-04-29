@@ -26,7 +26,7 @@ async function fetchArchivedProducts() {
             const card = `
                 <div class="product-grid-card rounded-xl overflow-hidden flex flex-col h-full">
                     <a href="product-detail.html?id=${p.id}">
-                        <img src="${p.mainImageUrl || 'https://via.placeholder.com/400'}" 
+                        <img src="${p.mainImage || 'https://via.placeholder.com/400'}" 
                             class="w-full h-56 object-cover" 
                             alt="${p.name}">
                     </a>
