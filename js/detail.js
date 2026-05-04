@@ -1,4 +1,4 @@
-const CONFIG = { API_URL: 'https://localhost:5181/api' };
+const CONFIG = { API_URL: 'https://localhost:7073/api' };
 
 async function fetchProductDetail() {
     // 1. Obtener el ID de la URL

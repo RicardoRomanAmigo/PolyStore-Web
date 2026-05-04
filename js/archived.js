@@ -1,5 +1,5 @@
 const CONFIG = {
-    API_URL: 'https://localhost:5181/api'
+    API_URL: 'https://localhost:7073/api'
 };
 
 async function fetchArchivedProducts() {
