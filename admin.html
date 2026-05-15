@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inktruders | Master Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #020617; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        input, textarea, select { 
+            background: rgba(15, 23, 42, 0.6) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+            color: white !important; 
+        }
+        input:focus { border-color: #3b82f6 !important; outline: none; }
+    </style>
+</head>
+<body class="p-6 lg:p-12">
+
+    <header class="flex justify-between items-center mb-10">
+        <div>
+            <h1 class="text-3xl font-black tracking-tighter uppercase italic">Control <span class="text-blue-500">Center</span></h1>
+            <p id="admin-info" class="text-slate-500 text-[10px] font-mono mt-1 uppercase tracking-widest">PostgreSQL Connected</p>
+        </div>
+        <div class="flex gap-4">
+            <a href="index.html" class="text-[10px] font-bold border border-white/10 px-4 py-2 rounded-full hover:bg-white/5 transition">WEB</a>
+            <button onclick="logout()" class="text-[10px] font-bold bg-red-500/20 text-red-400 px-4 py-2 rounded-full hover:bg-red-500 hover:text-white transition">SALIR</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <form id="product-form" class="lg:col-span-5 space-y-6">
+            <input type="hidden" id="p-id">
+            
+            <div class="glass p-8 rounded-[2rem] space-y-6">
+                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-[0.2em] mb-4">Información Básica</h3>
+                
+                <div class="space-y-4">
+                    <input type="text" id="p-name" placeholder="Nombre del producto" class="w-full px-5 py-4 rounded-2xl text-sm" required>
+                    <textarea id="p-description" placeholder="Descripción detallada..." rows="3" class="w-full px-5 py-4 rounded-2xl text-sm"></textarea>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="p-price" step="0.01" placeholder="Precio (€)" class="w-full px-5 py-4 rounded-2xl text-sm" required>
+                        <input type="number" id="p-stock" placeholder="Stock Inicial" class="w-full px-5 py-4 rounded-2xl text-sm" required>
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-[0.2em] pt-4">Multimedia & Assets</h3>
+                <div class="space-y-4">
+                    <input type="text" id="p-main-image" placeholder="URL Imagen Principal" class="w-full px-5 py-4 rounded-2xl text-sm">
+                    <input type="text" id="p-video" placeholder="URL Video (Opcional)" class="w-full px-5 py-4 rounded-2xl text-sm">
+                    <input type="text" id="p-render" placeholder="URL Render 3D (Opcional)" class="w-full px-5 py-4 rounded-2xl text-sm">
+                    <textarea id="p-gallery" placeholder="Galería: URL1, URL2, URL3..." rows="2" class="w-full px-5 py-4 rounded-2xl text-sm"></textarea>
+                </div>
+
+                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-[0.2em] pt-4">Estilo & Personalidad</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[9px] text-slate-500 uppercase ml-2 font-bold">Fondo (Primary)</label>
+                        <input type="color" id="p-color-primary" class="w-full h-12 rounded-xl cursor-pointer">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[9px] text-slate-500 uppercase ml-2 font-bold">Detalle (Accent)</label>
+                        <input type="color" id="p-color-accent" value="#3b82f6" class="w-full h-12 rounded-xl cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <input type="text" id="p-font" placeholder="Font Family (Inter, 'Oswald'...)" class="w-full px-5 py-4 rounded-2xl text-sm">
+                    <input type="text" id="p-bg-url" placeholder="URL Imagen de Fondo Decorativa" class="w-full px-5 py-4 rounded-2xl text-sm">
+                    <input type="text" id="p-tags" placeholder="Tags (separados por comas)" class="w-full px-5 py-4 rounded-2xl text-sm">
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20">
+                    Sincronizar con PostgreSQL
+                </button>
+                <button type="button" onclick="resetForm()" class="w-full text-[10px] text-slate-500 hover:text-white transition uppercase font-bold">
+                    Limpiar campos
+                </button>
+            </div>
+        </form>
+
+        <div class="lg:col-span-7 space-y-6">
+            <div class="glass rounded-[2rem] overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-white/5 text-[9px] uppercase tracking-[0.3em] text-slate-500">
+                        <tr>
+                            <th class="px-6 py-5">Producto</th>
+                            <th class="px-6 py-5 text-center">Stock</th>
+                            <th class="px-6 py-5">Precio</th>
+                            <th class="px-6 py-5">Status</th>
+                            <th class="px-6 py-5 text-right">Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="text-sm divide-y divide-white/5">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
