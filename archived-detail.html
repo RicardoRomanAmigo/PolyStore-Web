@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Catálogo | PolyStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="flex items-center justify-center min-h-screen text-white bg-[#0f172a] p-6">
+
+    <div class="fixed top-8 left-8 z-50 flex items-center gap-6">
+        <a href="index.html" class="text-xl font-bold tracking-tighter hover:text-gray-400 transition">
+            POLY<span class="text-blue-500">STORE</span>
+        </a>
+        <a href="archived.html" class="text-[10px] bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:bg-white/10 transition uppercase tracking-widest font-bold text-slate-400 hover:text-white">
+            ← Volver al Catálogo
+        </a>
+    </div>
+
+    <div id="product-card" class="bg-white/5 border border-white/10 p-12 rounded-[32px] shadow-2xl max-w-7xl w-full hidden backdrop-blur-md">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+            
+            <div id="p-gallery-rail" class="md:col-span-1 flex flex-col gap-3 justify-start">
+                </div>
+
+            <div class="md:col-span-7 bg-white/5 border border-white/5 rounded-3xl overflow-hidden flex items-center justify-center relative min-h-[450px]">
+                <img id="p-image" src="" alt="Producto" class="w-full h-full object-cover transition-all duration-300">
+            </div>
+
+            <div class="md:col-span-4 flex flex-col justify-center space-y-6 pl-4">
+                <div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-blue-500">Colección Histórica</span>
+                    <h1 id="p-name" class="text-5xl font-black uppercase tracking-tighter leading-none mb-4 mt-1">Cargando...</h1>
+                    <p id="p-description" class="text-slate-400 text-base leading-relaxed">Cargando descripción...</p>
+                </div>
+
+                <div class="space-y-4 pt-4 border-t border-white/10">
+                    <div id="p-price" class="text-4xl font-mono font-black text-blue-400">0,00€</div>
+                    
+                    <button id="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-blue-600/10 hover:scale-[1.02] transition-all flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-cart-shopping text-sm"></i>
+                        AÑADIR AL CARRITO
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="loader" class="text-slate-500 font-mono tracking-widest text-xs uppercase animate-pulse">
+        Buscando en el archivo de PolyStore...
+    </div>
+
+    <script src="js/archived-detail.js"></script>
+</body>
+</html>

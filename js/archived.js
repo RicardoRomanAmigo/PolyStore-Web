@@ -25,7 +25,7 @@ async function fetchArchivedProducts() {
         products.forEach(p => {
             const card = `
                 <div class="product-grid-card rounded-xl overflow-hidden flex flex-col h-full">
-                    <a href="product-detail.html?id=${p.id}">
+                    <a href="archived-detail.html?id=${p.id}">
                         <img src="${p.mainImage || 'https://via.placeholder.com/400'}" 
                             class="w-full h-56 object-cover" 
                             alt="${p.name}">
@@ -42,9 +42,9 @@ async function fetchArchivedProducts() {
                                 Ref: ${p.id.toString().slice(0, 8)}
                             </span>
                         </div>
-                        <a href="product-detail.html?id=${p.id}" 
+                        <a href="archived-detail.html?id=${p.id}" 
                             class="inline-block mt-4 text-sm font-bold underline" 
-                            style="color: ${p.accentColor}">
+                            style="color: ${p.accentColor || '#3b82f6'}">
                             VER DETALLES
                         </a>
                     </div>
@@ -54,7 +54,11 @@ async function fetchArchivedProducts() {
         });
 
     } catch (error) {
-        document.getElementById('loader').innerHTML = `<p class="text-red-400">Error al conectar con el servidor.</p>`;
+        // Corrección menor: si hay un error y "grid" ya se limpió, usamos el contenedor para mostrar el aviso
+        const grid = document.getElementById('products-grid');
+        if (grid) {
+            grid.innerHTML = `<p class="col-span-full text-center text-red-400">Error al conectar con el servidor.</p>`;
+        }
         console.error("Error:", error);
     }
 }

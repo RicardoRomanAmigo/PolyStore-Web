@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Producto | PolyStore</title>
+    <title>Detalle del Producto Live | PolyStore</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="flex items-center justify-center min-h-screen">
-    <!-- ESQUINA SUPERIOR IZQUIERDA: Identidad y Navegación -->
+<body class="flex items-center justify-center min-h-screen text-white bg-[#0f172a] p-6 transition-colors duration-500">
+
     <div class="fixed top-8 left-8 z-50 flex items-center gap-6">
         <a href="index.html" class="text-xl font-bold tracking-tighter hover:text-gray-400 transition">
-            POLY<span class="text-blue-500">STORE</span>
+            POLY<span id="logo-accent" class="text-blue-500">STORE</span>
         </a>
         <a href="archived.html"
             class="text-[10px] bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:bg-white/10 transition uppercase tracking-widest font-bold text-slate-400 hover:text-white">
@@ -18,7 +19,6 @@
         </a>
     </div>
 
-    <!-- ESQUINA SUPERIOR DERECHA: Login / User -->
     <div class="fixed top-8 right-8 z-50 flex items-center gap-6 font-medium">
         <div id="auth-section">
             <button onclick="openLoginModal()"
@@ -28,10 +28,9 @@
         </div>
     </div>
     
-    <!-- MODAL DE LOGIN (Capa superior) -->
     <div id="login-modal"
         class="fixed inset-0 bg-[#0f172a]/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
-        <div class="glass p-10 rounded-3xl max-w-sm w-full border border-white/10 shadow-2xl">
+        <div class="bg-white/5 p-10 rounded-3xl max-w-sm w-full border border-white/10 shadow-2xl backdrop-blur-lg">
             <h2 class="text-3xl font-black mb-8 tracking-tighter text-white">ENTRAR</h2>
             <form id="login-form" class="space-y-4">
                 <input type="email" id="login-email" placeholder="Email"
@@ -50,29 +49,57 @@
         </div>
     </div>
 
-    <!-- TARJETA DE PRODUCTO LIVE -->
-    <div id="product-card" class="glass p-8 rounded-3xl shadow-2xl max-w-md w-full hidden">
-        <div class="relative">
-            <span class="absolute -top-4 -left-4 bg-green-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                Live Now
-            </span>
-            <img id="p-image" src="" alt="Producto" class="w-full h-64 object-cover rounded-2xl mb-6 shadow-lg">
-        </div>
+    <div id="product-card" class="bg-white/5 border border-white/10 p-12 rounded-[32px] shadow-2xl max-w-7xl w-full hidden relative backdrop-blur-md">
+        
+        <span class="absolute -top-3 left-8 bg-green-500 text-[10px] text-black font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-green-500/20 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></span> Live Now
+        </span>
 
-        <h1 id="p-name" class="text-3xl font-black mb-2 tracking-tight">Cargando...</h1>
-        <p id="p-description" class="text-slate-400 mb-6 text-sm leading-relaxed"></p>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+            
+            <div id="p-gallery-rail" class="md:col-span-1 flex flex-col gap-3 justify-start">
+                <button class="w-full aspect-square rounded-xl overflow-hidden border-2 border-blue-500 bg-white/5 opacity-100 transition-all hover:scale-105">
+                    <img src="" class="w-full h-full object-cover" alt="Vista">
+                </button>
+            </div>
 
-        <div class="flex items-center justify-between">
-            <span id="p-price" class="text-3xl font-mono font-bold text-green-400"></span>
-            <button id="button" class="bg-white text-black px-6 py-2 rounded-xl font-bold hover:bg-green-400 transition-colors">
-                Comprar
-            </button>
+            <div class="md:col-span-7 bg-white/5 border border-white/5 rounded-3xl overflow-hidden flex items-center justify-center relative min-h-[450px]">
+                <img id="p-image" src="" alt="Producto" class="w-full h-full object-cover transition-all duration-300">
+            </div>
+
+            <div class="md:col-span-4 flex flex-col justify-center space-y-6 pl-4">
+                <div>
+                    <h1 id="p-name" class="text-5xl font-black uppercase tracking-tighter leading-none mb-4">
+                        Cargando...
+                    </h1>
+                    <p id="p-description" class="text-slate-400 text-base leading-relaxed">
+                        Recuperando especificaciones...
+                    </p>
+                </div>
+
+                <div class="space-y-4 pt-4 border-t border-white/10">
+                    <div id="p-price" class="text-4xl font-mono font-black text-blue-400">
+                        0,00€
+                    </div>
+                    
+                    <button id="button" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-cart-shopping text-sm"></i>
+                        AÑADIR AL CARRITO
+                    </button>
+                    
+                    <div class="text-center text-[10px] text-slate-500 tracking-widest uppercase">
+                        Sincronizado con Postgres
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div id="loader" class="text-slate-500 font-mono">Conectando con PolyStore API...</div>
+    <div id="loader" class="text-slate-500 font-mono tracking-widest text-xs uppercase animate-pulse">
+        Conectando con PolyStore API...
+    </div>
 
-    <!-- Scripts en orden: Primero la lógica de sesión, luego la carga de datos -->
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
 </body>
