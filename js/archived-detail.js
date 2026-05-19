@@ -1,4 +1,4 @@
-// js/catalog-detail.js
+// js/archived-detail.js
 const CONFIG = {
     API_URL: 'https://localhost:7073/api'
 };
@@ -29,6 +29,14 @@ async function fetchCatalogProduct() {
         // 4. Montamos la galería estilo Amazon
         setupCatalogGallery(product);
 
+        // --- NUEVO: 4.5. ASIGNAR ACCIÓN AL BOTÓN DE COMPRA ---
+        const buyButton = document.getElementById('button');
+        if (buyButton) {
+            buyButton.onclick = function() {
+                addToCart(product); // Llama al cerebro de js/cart-helper.js
+            };
+        }
+
         // 5. Mostramos la tarjeta y escondemos el loader
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('product-card').classList.remove('hidden');
@@ -44,7 +52,6 @@ function setupCatalogGallery(product) {
     if (!rail) return;
 
     // La primera miniatura siempre es la imagen principal del producto
-    // Usamos el color azul corporativo fijo (border-blue-500) para el enfoque
     let html = `
         <button onclick="document.getElementById('p-image').src='${product.mainImage}'" class="w-full aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-white/5 opacity-70 hover:opacity-100 hover:border-blue-500 transition-all duration-200">
             <img src="${product.mainImage}" class="w-full h-full object-cover">
