@@ -142,3 +142,36 @@ async function editProduct(id) {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// Para eliminar un producto
+async function deleteProduct(id) {
+    if (!confirm("¿Seguro que deseas eliminar permanentemente este producto de PostgreSQL?")) {
+        return;
+    }
+
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            alert("¡Producto eliminado correctamente!");
+            loadProducts(); // Refresca la tabla
+            if (document.getElementById('p-id').value === id) {
+                resetForm(); // Limpia el formulario si se estaba editando ese mismo ítem
+            }
+        } else {
+            const error = await response.json();
+            console.error("Error al eliminar:", error);
+            alert("Error al eliminar: " + (error.message || "No se pudo completar la acción"));
+        }
+    } catch (err) {
+        console.error("Error de conexión:", err);
+        alert("Error de conexión con el servidor.");
+    }
+}
