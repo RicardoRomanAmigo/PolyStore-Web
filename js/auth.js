@@ -12,12 +12,19 @@ function updateAuthUI() {
 
     if (token && userName) {
         authSection.innerHTML = `
-            <div class="flex items-center gap-4">
-                <span class="text-xs font-mono text-slate-500">${userName.toUpperCase()}</span>
+            <div class="flex items-center gap-5">
+                <a href="dashboard.html" class="flex items-center gap-2 text-xs font-bold text-white hover:text-blue-400 transition-all uppercase tracking-widest">
+                    <i class="fa-solid fa-user-circle text-lg opacity-80 group-hover:text-blue-400 transition-all"></i>
+                    <span class="border-b border-white/10">${userName.toUpperCase()}</span>
+                </a>
+                
                 ${role === 'Admin' ? 
                     `<a href="admin.html" class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full font-bold hover:bg-blue-500 hover:text-white transition-all">ADMIN</a>` 
                     : ''}
-                <button onclick="logout()" class="text-[10px] text-red-500/70 hover:text-red-400 font-bold uppercase tracking-widest">Salir</button>
+                
+                <button onclick="logout()" class="text-[10px] text-slate-500 hover:text-red-400 transition-all uppercase tracking-widest">
+                    Salir
+                </button>
             </div>
         `;
     } else {
