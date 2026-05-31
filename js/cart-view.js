@@ -100,9 +100,57 @@ function removeItem(productId) {
     renderCartView();
 }
 
-// Escuchar el botón de finalizar compra (Checkout provisional)
-document.getElementById('checkout-btn').addEventListener('click', () => {
-    alert('Próximo paso: Conectar con la pasarela de Stripe y tu API de C# en PostgreSQL.');
+// Escuchar el botón de finalizar compra (Checkout provisional) <-------------
+document.getElementById('checkout-btn').addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    
+    // Si no hay token, redirigimos al login o abrimos el modal
+    if (!token) {
+        alert("Debes iniciar sesión para realizar tu compra.");
+        openLoginModal(); // Suponiendo que tienes esta función global
+        return;
+    }
+
+    const cart = getCart();
+    
+    // Ya no necesitamos customerEmail manualmente, tu API lo obtendrá por el Token
+    const orderRequest = {
+        userId: localStorage.getItem('userId'),
+        items: cart.map(item => ({
+            productId: item.id,
+            quantity: parseInt(item.quantity)
+        }))
+    };
+
+    try {
+        // 2. Llamada a tu API para crear el pedido
+        const response = await fetch('https://localhost:7073/api/Orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Si tienes token, lo enviamos para identificar al usuario
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify(orderRequest)
+        });
+
+        if (!response.ok) throw new Error("Error al crear el pedido");
+
+        // 3. Recibimos el orderId generado por Postgres
+        const orderId = await response.json(); 
+        
+        console.log("Pedido creado con ID:", orderId);
+
+        // 4. AQUÍ ES DONDE PASAREMOS AL PAGO (Próximo paso)
+        // Por ahora, redirigimos a una página de éxito o avisamos
+        alert("Pedido creado correctamente. Preparando pasarela de pago...");
+        
+        // window.location.href = `payment.html?orderId=${orderId}`;
+
+    } catch (err) {
+        console.error(err);
+        alert("Hubo un error al procesar tu pedido. Inténtalo de nuevo.");
+    }
 });
 
 // Arrancar la renderización inicial al abrir la página

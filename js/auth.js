@@ -73,6 +73,7 @@ async function handleLogin(e) {
         localStorage.setItem('role', user.role);
         localStorage.setItem('userName', user.userName);
         localStorage.setItem('userId', user.userId);
+        localStorage.setItem('userEmail', email); //<---
 
         // 4. Limpiar interfaz
         closeLoginModal();
