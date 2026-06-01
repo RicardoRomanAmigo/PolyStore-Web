@@ -102,20 +102,25 @@ function removeItem(productId) {
 
 // Escuchar el botón de finalizar compra (Checkout provisional) <-------------
 document.getElementById('checkout-btn').addEventListener('click', async () => {
-    const token = localStorage.getItem('token');
-    
-    // Si no hay token, redirigimos al login o abrimos el modal
-    if (!token) {
-        alert("Debes iniciar sesión para realizar tu compra.");
-        openLoginModal(); // Suponiendo que tienes esta función global
-        return;
-    }
-
     const cart = getCart();
     
-    // Ya no necesitamos customerEmail manualmente, tu API lo obtendrá por el Token
+    // 1. Intentamos obtener el email (del usuario logueado o de donde decidas guardarlo)
+    let email = localStorage.getItem('userEmail');
+    
+    // 2. Si no hay email, obligamos a obtener uno antes de seguir
+    if (!email) {
+        // Opción: Podrías abrir un pequeño modal propio en lugar de usar prompt()
+        email = prompt("Para finalizar, introduce tu email de contacto:");
+        if (!email) {
+            alert("El email es necesario para gestionar tu pedido.");
+            return;
+        }
+    }
+
+    // 3. Construimos el objeto. Ya no será una cadena vacía ""
     const orderRequest = {
-        userId: localStorage.getItem('userId'),
+        userId: localStorage.getItem('userId') || null,
+        customerEmail: email, // Ahora siempre tendrá un valor real
         items: cart.map(item => ({
             productId: item.id,
             quantity: parseInt(item.quantity)
@@ -123,33 +128,27 @@ document.getElementById('checkout-btn').addEventListener('click', async () => {
     };
 
     try {
-        // 2. Llamada a tu API para crear el pedido
         const response = await fetch('https://localhost:7073/api/Orders', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Si tienes token, lo enviamos para identificar al usuario
-                ...(token && { 'Authorization': `Bearer ${token}` })
+                ...(localStorage.getItem('token') && { 'Authorization': 'Bearer ' + localStorage.getItem('token') })
             },
             body: JSON.stringify(orderRequest)
         });
 
-        if (!response.ok) throw new Error("Error al crear el pedido");
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+        }
 
-        // 3. Recibimos el orderId generado por Postgres
-        const orderId = await response.json(); 
+        const orderId = await response.json();
+        alert("Pedido creado correctamente. ID: " + orderId);
         
-        console.log("Pedido creado con ID:", orderId);
-
-        // 4. AQUÍ ES DONDE PASAREMOS AL PAGO (Próximo paso)
-        // Por ahora, redirigimos a una página de éxito o avisamos
-        alert("Pedido creado correctamente. Preparando pasarela de pago...");
-        
-        // window.location.href = `payment.html?orderId=${orderId}`;
-
+        // Aquí llamarás a Stripe próximamente
     } catch (err) {
-        console.error(err);
-        alert("Hubo un error al procesar tu pedido. Inténtalo de nuevo.");
+        console.error("Error al crear el pedido:", err);
+        alert("Error: " + err.message);
     }
 });
 
