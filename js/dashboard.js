@@ -25,11 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('user-name-display').innerText = localStorage.getItem('userName') || 'Usuario';
     document.getElementById('user-avatar').innerText = (localStorage.getItem('userName') || 'US').substring(0, 2).toUpperCase();
-    //document.getElementById('profile-name').value = localStorage.getItem('userName'); <---
     document.getElementById('profile-id').value = userId;
 
     loadOrders();
-    loadProfile(); //<---
+    loadProfile();
 });
 
 async function loadOrders() {
@@ -44,7 +43,6 @@ async function loadOrders() {
 
         const orders = await response.json();
 
-        // Cálculo total (usando totalAmount tras la corrección)
         const totalGastado = orders.reduce((sum, o) => sum + (parseFloat(o.totalAmount) || 0), 0);
         document.getElementById('stat-total-orders').innerText = orders.length;
         document.getElementById('stat-total-spent').innerText = `${totalGastado.toFixed(2)}€`;
@@ -69,7 +67,6 @@ async function loadOrders() {
     }
 }
 
-// Carga el detalle y enriquece la info de los productos al vuelo
 async function showOrderDetail(orderId) {
     const tableContainer = document.getElementById('orders-table-container');
     const displayArea = document.getElementById('orders-display-area');
@@ -81,14 +78,13 @@ async function showOrderDetail(orderId) {
         });
         const order = await response.json();
 
-        // Obtenemos los detalles de cada producto en paralelo
         const itemDetails = await Promise.all(order.items.map(async (item) => {
             try {
                 const prodRes = await fetch(`https://localhost:7073/api/Products/${item.productId}`);
                 const prodData = await prodRes.json();
                 return { ...item, imageUrl: prodData.mainImage, status: prodData.status };
             } catch {
-                return { ...item, imageUrl: null, status: 2 }; // Default a catalogo si falla
+                return { ...item, imageUrl: null, status: 2 };
             }
         }));
 
@@ -130,17 +126,18 @@ async function showOrderDetail(orderId) {
     }
 }
 
-// 1. Cargar datos al abrir la pestaña Perfil
 async function loadProfile() {
     const token = localStorage.getItem('token');
     
-    // 1. Cargamos el nombre completo de la cuenta desde el LocalStorage (ya existente)
-    const nameInput = document.getElementById('profile-fullname');
-    if (nameInput) {
-        nameInput.value = localStorage.getItem('fullName') || localStorage.getItem('userName') || '';
-    }
+    // Rellenamos desde LocalStorage primero para velocidad
+    fillInputField('profile-fullname', localStorage.getItem('fullName'));
+    fillInputField('profile-dni', localStorage.getItem('dni'));
+    fillInputField('profile-phone', localStorage.getItem('phoneNumber'));
+    fillInputField('profile-address', localStorage.getItem('address'));
+    fillInputField('profile-city', localStorage.getItem('city'));
+    fillInputField('profile-cp', localStorage.getItem('cp'));
 
-    // 2. Intentamos cargar el resto de datos de dirección desde el API
+    // Actualizamos con datos frescos del servidor
     try {
         const response = await fetch('https://localhost:7073/api/Profile/address', {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -148,11 +145,7 @@ async function loadProfile() {
         
         if (response.ok) {
             const data = await response.json();
-            
-            // Mapeamos los campos dinámicamente
-            // Esto rellena solo los campos que tienen datos, si data.dni es null, 
-            // el input se quedará vacío (que es lo que quieres)
-            fillInputField('profile-fullname', data.fullName); // Sobrescribe si el API tiene dirección específica
+            fillInputField('profile-fullname', data.fullName);
             fillInputField('profile-dni', data.dni);
             fillInputField('profile-phone', data.phoneNumber);
             fillInputField('profile-address', data.address);
@@ -160,19 +153,17 @@ async function loadProfile() {
             fillInputField('profile-cp', data.postalCode);
         }
     } catch (err) {
-        console.warn("No hay dirección configurada aún, el formulario está listo para ser completado.");
+        console.warn("No se pudieron refrescar datos del perfil.");
     }
 }
 
-// 1.2. Función auxiliar para rellenar inputs sin romper el código si el ID no existe
 function fillInputField(id, value) {
     const element = document.getElementById(id);
-    if (element) {
-        element.value = value || ''; // Si value es null/undefined, pone cadena vacía
+    if (element && value) { // Solo rellenamos si hay valor para no sobrescribir vacío
+        element.value = value;
     }
 }
 
-// 2. Guardar cambios
 async function saveProfile() {
     const token = localStorage.getItem('token');
     const payload = {
@@ -194,9 +185,17 @@ async function saveProfile() {
     });
 
     if (response.ok) {
+        // --- SINCRONIZACIÓN CON LOCALSTORAGE ---
+        localStorage.setItem('fullName', payload.fullName);
+        localStorage.setItem('dni', payload.dni);
+        localStorage.setItem('phoneNumber', payload.phoneNumber);
+        localStorage.setItem('address', payload.address);
+        localStorage.setItem('city', payload.city);
+        localStorage.setItem('cp', payload.postalCode);
+        
         alert("Datos guardados correctamente");
     } else {
-        alert("Error al guardar los datos. Revisa los campos.");
+        alert("Error al guardar los datos.");
     }
 }
 

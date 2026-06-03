@@ -1,8 +1,5 @@
-// js/cart-view.js
-
-// Función para pintar el carrito en la pantalla
 function renderCartView() {
-    const cart = getCart(); // Viene de cart-helper.js
+    const cart = getCart();
     const container = document.getElementById('cart-items-container');
     
     if (!container) return;
@@ -11,11 +8,8 @@ function renderCartView() {
     if (cart.length === 0) {
         container.innerHTML = `
             <div class="glass p-12 rounded-3xl text-center space-y-4">
-                <i class="fa-solid fa-cart-shopping text-4xl text-slate-600"></i>
-                <p class="text-slate-400 font-medium">Tu carrito está completamente vacío.</p>
-                <a href="archived.html" class="inline-block bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition">
-                    Explorar Catálogo
-                </a>
+                <p class="text-slate-400 font-medium">Tu carrito está vacío.</p>
+                <a href="archived.html" class="inline-block bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase hover:bg-white/10 transition">Explorar Catálogo</a>
             </div>
         `;
         document.getElementById('cart-subtotal').innerText = '0.00€';
@@ -25,132 +19,59 @@ function renderCartView() {
         return;
     }
 
-    // Si hay artículos, habilitamos el botón de pagar por si acaso estaba deshabilitado
     document.getElementById('checkout-btn').disabled = false;
     document.getElementById('checkout-btn').classList.remove('opacity-40', 'cursor-not-allowed');
 
     let totalAcumulado = 0;
-
     cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
         totalAcumulado += itemTotal;
-
         const rowHTML = `
-            <div class="glass p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-4 w-full sm:w-auto">
-                    <img src="${item.image || 'https://via.placeholder.com/100'}" class="w-16 h-16 object-cover rounded-xl border border-white/10" alt="${item.name}">
+            <div class="glass p-4 rounded-2xl flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="${item.image}" class="w-16 h-16 object-cover rounded-xl border border-white/10">
                     <div>
-                        <h3 class="font-bold text-base leading-tight">${item.name}</h3>
-                        <p class="text-xs text-slate-500 font-mono mt-1">Precio un.: ${item.price}€</p>
+                        <h3 class="font-bold text-base">${item.name}</h3>
+                        <p class="text-xs text-slate-500 font-mono">Precio: ${item.price}€</p>
                     </div>
                 </div>
-
-                <div class="flex items-center justify-between sm:justify-end gap-8 w-full sm:w-auto">
-                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-                        <button onclick="changeQuantity('${item.id}', -1)" class="px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
-                            <i class="fa-solid fa-minus text-xs"></i>
-                        </button>
-                        <span class="px-3 font-mono font-bold text-sm text-center min-w-[35px]">${item.quantity}</span>
-                        <button onclick="changeQuantity('${item.id}', 1)" class="px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center bg-white/5 border border-white/10 rounded-xl">
+                        <button onclick="changeQuantity('${item.id}', -1)" class="px-3 py-2 hover:bg-white/5"><i class="fa-solid fa-minus text-xs"></i></button>
+                        <span class="px-3 font-mono font-bold text-sm">${item.quantity}</span>
+                        <button onclick="changeQuantity('${item.id}', 1)" class="px-3 py-2 hover:bg-white/5"><i class="fa-solid fa-plus text-xs"></i></button>
                     </div>
-
-                    <div class="text-right">
-                        <span class="font-mono font-bold text-lg text-white">${itemTotal.toFixed(2)}€</span>
-                    </div>
-
-                    <button onclick="removeItem('${item.id}')" class="text-slate-500 hover:text-red-400 transition-colors pl-2">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                    <span class="font-mono font-bold text-lg">${itemTotal.toFixed(2)}€</span>
+                    <button onclick="removeItem('${item.id}')" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
 
-    // Actualizamos el bloque de resumen
     document.getElementById('cart-subtotal').innerText = `${totalAcumulado.toFixed(2)}€`;
     document.getElementById('cart-total').innerText = `${totalAcumulado.toFixed(2)}€`;
 }
 
-// Cambiar la cantidad de un producto (+1 o -1)
 function changeQuantity(productId, delta) {
     let cart = getCart();
     const item = cart.find(p => p.id === productId);
-
     if (item) {
         item.quantity += delta;
-        
-        // Si la cantidad baja de 1, eliminamos el ítem por completo
-        if (item.quantity <= 0) {
-            cart = cart.filter(p => p.id !== productId);
-        }
-        
-        saveCart(cart); // Guarda en localStorage y actualiza contador global
-        renderCartView(); // Refresca la vista del carrito
+        if (item.quantity <= 0) cart = cart.filter(p => p.id !== productId);
+        saveCart(cart);
+        renderCartView();
     }
 }
 
-// Eliminar un producto completo del tirón con el icono de papelera
 function removeItem(productId) {
-    let cart = getCart();
-    cart = cart.filter(p => p.id !== productId);
-    saveCart(cart);
+    saveCart(getCart().filter(p => p.id !== productId));
     renderCartView();
 }
 
-// Escuchar el botón de finalizar compra (Checkout provisional) <-------------
-document.getElementById('checkout-btn').addEventListener('click', async () => {
-    const cart = getCart();
-    
-    // 1. Intentamos obtener el email (del usuario logueado o de donde decidas guardarlo)
-    let email = localStorage.getItem('userEmail');
-    
-    // 2. Si no hay email, obligamos a obtener uno antes de seguir
-    if (!email) {
-        // Opción: Podrías abrir un pequeño modal propio en lugar de usar prompt()
-        email = prompt("Para finalizar, introduce tu email de contacto:");
-        if (!email) {
-            alert("El email es necesario para gestionar tu pedido.");
-            return;
-        }
-    }
-
-    // 3. Construimos el objeto. Ya no será una cadena vacía ""
-    const orderRequest = {
-        userId: localStorage.getItem('userId') || null,
-        customerEmail: email, // Ahora siempre tendrá un valor real
-        items: cart.map(item => ({
-            productId: item.id,
-            quantity: parseInt(item.quantity)
-        }))
-    };
-
-    try {
-        const response = await fetch('https://localhost:7073/api/Orders', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(localStorage.getItem('token') && { 'Authorization': 'Bearer ' + localStorage.getItem('token') })
-            },
-            body: JSON.stringify(orderRequest)
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText);
-        }
-
-        const orderId = await response.json();
-        alert("Pedido creado correctamente. ID: " + orderId);
-        
-        // Aquí llamarás a Stripe próximamente
-    } catch (err) {
-        console.error("Error al crear el pedido:", err);
-        alert("Error: " + err.message);
-    }
+// BOTÓN PROCESAR PAGO: Ahora redirige directamente al Checkout para todos
+document.getElementById('checkout-btn').addEventListener('click', () => {
+    window.location.href = 'checkout.html';
 });
 
-// Arrancar la renderización inicial al abrir la página
 document.addEventListener('DOMContentLoaded', renderCartView);
