@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +8,59 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { background-color: #020617; color: white; font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        body {
+            background-color: #020617;
+            color: white;
+            font-family: sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
     <header class="p-6 lg:px-12 flex justify-between items-center border-b border-white/5">
         <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic">
             POLY<span class="text-blue-500">STORE</span>
         </a>
-        <a href="archived.html" class="text-[10px] font-bold border border-white/10 px-4 py-2 rounded-full hover:bg-white/5 transition tracking-widest uppercase">
+        <a href="archived.html"
+            class="text-[10px] font-bold border border-white/10 px-4 py-2 rounded-full hover:bg-white/5 transition tracking-widest uppercase">
             Volver a la Tienda
         </a>
     </header>
 
     <div class="flex-grow flex flex-col md:flex-row max-w-7xl w-full mx-auto p-6 lg:p-12 gap-8">
-        
+
         <aside class="w-full md:w-64 flex-shrink-0 space-y-6">
             <div class="glass p-6 rounded-3xl text-center space-y-3">
-                <div class="w-16 h-16 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20" id="user-avatar">--</div>
+                <div class="w-16 h-16 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20"
+                    id="user-avatar">--</div>
                 <div>
                     <h2 id="user-name-display" class="font-bold text-sm uppercase tracking-wider">Cargando...</h2>
                     <p class="text-[10px] text-slate-500 font-mono tracking-widest">USUARIO REGISTRADO</p>
@@ -37,16 +68,20 @@
             </div>
 
             <nav class="flex flex-col gap-2">
-                <button onclick="switchTab('overview')" id="tab-btn-overview" class="tab-btn active text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all bg-white/10 text-white">
+                <button onclick="switchTab('overview')" id="tab-btn-overview"
+                    class="tab-btn active text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all bg-white/10 text-white">
                     <i class="fa-solid fa-chart-pie w-6 opacity-50"></i> Resumen
                 </button>
-                <button onclick="switchTab('orders')" id="tab-btn-orders" class="tab-btn text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/5 text-slate-400 hover:text-white">
+                <button onclick="switchTab('orders')" id="tab-btn-orders"
+                    class="tab-btn text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/5 text-slate-400 hover:text-white">
                     <i class="fa-solid fa-box-open w-6 opacity-50"></i> Mis Pedidos
                 </button>
-                <button onclick="switchTab('settings')" id="tab-btn-settings" class="tab-btn text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/5 text-slate-400 hover:text-white">
+                <button onclick="switchTab('settings')" id="tab-btn-settings"
+                    class="tab-btn text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/5 text-slate-400 hover:text-white">
                     <i class="fa-solid fa-gear w-6 opacity-50"></i> Perfil
                 </button>
-                <button onclick="logout()" class="text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-red-500/70 hover:bg-red-500/10 hover:text-red-400 mt-4">
+                <button onclick="logout()"
+                    class="text-left px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-red-500/70 hover:bg-red-500/10 hover:text-red-400 mt-4">
                     <i class="fa-solid fa-arrow-right-from-bracket w-6 opacity-50"></i> Cerrar Sesión
                 </button>
             </nav>
@@ -55,16 +90,19 @@
         <main class="flex-grow glass p-8 lg:p-10 rounded-[2rem] min-h-[500px]">
             <section id="tab-overview" class="tab-content active space-y-8">
                 <div>
-                    <h3 class="text-2xl font-black tracking-tighter uppercase italic">Panel <span class="text-blue-500">General</span></h3>
+                    <h3 class="text-2xl font-black tracking-tighter uppercase italic">Panel <span
+                            class="text-blue-500">General</span></h3>
                     <p class="text-xs text-slate-500 font-mono mt-1">Visión global de tu cuenta.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-white/5 border border-white/10 p-6 rounded-2xl">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Total Gastado</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Total
+                            Gastado</span>
                         <span id="stat-total-spent" class="text-3xl font-mono font-black text-white">0.00€</span>
                     </div>
                     <div class="bg-white/5 border border-white/10 p-6 rounded-2xl">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Pedidos Realizados</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Pedidos
+                            Realizados</span>
                         <span id="stat-total-orders" class="text-3xl font-mono font-black text-blue-400">0</span>
                     </div>
                 </div>
@@ -73,10 +111,12 @@
             <section id="tab-orders" class="tab-content space-y-8">
                 <div id="orders-display-area">
                     <div id="orders-table-container">
-                        <h3 class="text-2xl font-black tracking-tighter uppercase italic mb-8">Historial de <span class="text-blue-500">Pedidos</span></h3>
+                        <h3 class="text-2xl font-black tracking-tighter uppercase italic mb-8">Historial de <span
+                                class="text-blue-500">Pedidos</span></h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left min-w-[600px]">
-                                <thead class="bg-white/5 text-[9px] uppercase tracking-[0.3em] text-slate-500 border-b border-white/5">
+                                <thead
+                                    class="bg-white/5 text-[9px] uppercase tracking-[0.3em] text-slate-500 border-b border-white/5">
                                     <tr>
                                         <th class="px-4 py-4">ID Pedido</th>
                                         <th class="px-4 py-4">Fecha</th>
@@ -86,7 +126,10 @@
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body" class="text-xs divide-y divide-white/5 font-mono">
-                                    <tr><td colspan="5" class="p-8 text-center text-slate-500 animate-pulse">Cargando datos...</td></tr>
+                                    <tr>
+                                        <td colspan="5" class="p-8 text-center text-slate-500 animate-pulse">Cargando
+                                            datos...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -96,11 +139,39 @@
 
             <section id="tab-settings" class="tab-content space-y-8">
                 <div>
-                    <h3 class="text-2xl font-black tracking-tighter uppercase italic">Datos del <span class="text-blue-500">Perfil</span></h3>
+                    <h3 class="text-2xl font-black tracking-tighter uppercase italic">Editar <span
+                            class="text-blue-500">Perfil</span></h3>
+                    <p class="text-xs text-slate-500 font-mono mt-1">Gestiona tus datos de envío.</p>
                 </div>
                 <div class="space-y-4 max-w-md">
-                    <input type="text" id="profile-name" disabled class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 font-mono">
-                    <input type="text" id="profile-id" disabled class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] text-slate-500 font-mono">
+                    <input type="text" id="profile-fullname" placeholder="Nombre Completo"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="profile-dni" placeholder="DNI/NIE"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="profile-phone" placeholder="Teléfono"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="profile-address" placeholder="Dirección"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="profile-city" placeholder="Ciudad"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500">
+                        <input type="text" id="profile-cp" placeholder="Código Postal"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <button onclick="saveProfile()"
+                        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all uppercase tracking-widest text-xs mt-4">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </section>
+
+            <!--campo oculto para el id para poder enviarlo-->
+            <section id="tab-settings" class="tab-content space-y-8">
+                <div class="space-y-4 max-w-md">
+                    <input type="hidden" id="profile-id">
+
+                    <input type="text" id="profile-fullname" ...>
                 </div>
             </section>
         </main>
@@ -109,4 +180,5 @@
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
+
 </html>

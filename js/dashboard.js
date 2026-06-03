@@ -25,10 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('user-name-display').innerText = localStorage.getItem('userName') || 'Usuario';
     document.getElementById('user-avatar').innerText = (localStorage.getItem('userName') || 'US').substring(0, 2).toUpperCase();
-    document.getElementById('profile-name').value = localStorage.getItem('userName');
+    //document.getElementById('profile-name').value = localStorage.getItem('userName'); <---
     document.getElementById('profile-id').value = userId;
 
     loadOrders();
+    loadProfile(); //<---
 });
 
 async function loadOrders() {
@@ -126,6 +127,76 @@ async function showOrderDetail(orderId) {
         displayArea.appendChild(detailDiv);
     } catch (err) {
         console.error("Error al cargar detalle:", err);
+    }
+}
+
+// 1. Cargar datos al abrir la pestaña Perfil
+async function loadProfile() {
+    const token = localStorage.getItem('token');
+    
+    // 1. Cargamos el nombre completo de la cuenta desde el LocalStorage (ya existente)
+    const nameInput = document.getElementById('profile-fullname');
+    if (nameInput) {
+        nameInput.value = localStorage.getItem('fullName') || localStorage.getItem('userName') || '';
+    }
+
+    // 2. Intentamos cargar el resto de datos de dirección desde el API
+    try {
+        const response = await fetch('https://localhost:7073/api/Profile/address', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Mapeamos los campos dinámicamente
+            // Esto rellena solo los campos que tienen datos, si data.dni es null, 
+            // el input se quedará vacío (que es lo que quieres)
+            fillInputField('profile-fullname', data.fullName); // Sobrescribe si el API tiene dirección específica
+            fillInputField('profile-dni', data.dni);
+            fillInputField('profile-phone', data.phoneNumber);
+            fillInputField('profile-address', data.address);
+            fillInputField('profile-city', data.city);
+            fillInputField('profile-cp', data.postalCode);
+        }
+    } catch (err) {
+        console.warn("No hay dirección configurada aún, el formulario está listo para ser completado.");
+    }
+}
+
+// 1.2. Función auxiliar para rellenar inputs sin romper el código si el ID no existe
+function fillInputField(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.value = value || ''; // Si value es null/undefined, pone cadena vacía
+    }
+}
+
+// 2. Guardar cambios
+async function saveProfile() {
+    const token = localStorage.getItem('token');
+    const payload = {
+        fullName: document.getElementById('profile-fullname').value,
+        dni: document.getElementById('profile-dni').value,
+        phoneNumber: document.getElementById('profile-phone').value,
+        address: document.getElementById('profile-address').value,
+        city: document.getElementById('profile-city').value,
+        postalCode: document.getElementById('profile-cp').value
+    };
+
+    const response = await fetch('https://localhost:7073/api/Profile/address', {
+        method: 'PUT',
+        headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+        alert("Datos guardados correctamente");
+    } else {
+        alert("Error al guardar los datos. Revisa los campos.");
     }
 }
 

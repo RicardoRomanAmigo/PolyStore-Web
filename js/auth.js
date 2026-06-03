@@ -9,6 +9,7 @@ function updateAuthUI() {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     const userName = localStorage.getItem('userName');
+    const fullName = localStorage.getItem('fullName'); // Recuperamos el nombre completo
 
     if (token && userName) {
         authSection.innerHTML = `
@@ -72,8 +73,9 @@ async function handleLogin(e) {
         localStorage.setItem('token', user.token);
         localStorage.setItem('role', user.role);
         localStorage.setItem('userName', user.userName);
+        localStorage.setItem('fullName', user.fullName); //<---
         localStorage.setItem('userId', user.userId);
-        localStorage.setItem('userEmail', email); //<---
+        localStorage.setItem('userEmail', email); 
 
         // 4. Limpiar interfaz
         closeLoginModal();
