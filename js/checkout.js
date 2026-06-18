@@ -125,11 +125,11 @@ async function processCheckout() {
         const orderId = await orderResponse.json();
         
         // PASO 2: SOLICITAR LA INTENCIÓN DE PAGO A TU NUEVO ENDPOINT
-        const intentResponse = await(fetch`https://localhost:7073/api/orders//${orderId}/payment-intent`, {
-            method:'POST',
+        const intentResponse = await fetch(`https://localhost:7073/api/orders/${orderId}/payment-intent`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...arguments(localStorage.getItem('token') && { 'Authorization': 'Bearer ' + localStorage.getItem('token') })
+                ...(localStorage.getItem('token') && { 'Authorization': 'Bearer ' + localStorage.getItem('token') })
             }
         });
 
@@ -142,8 +142,6 @@ async function processCheckout() {
         // PASO 3: MOSTRAR EL FORMULARIO DE STRIPE
         renderStripeForm(clientSecret);
 
-        localStorage.removeItem('polystore_cart');
-        window.location.href = 'index.html';
     } catch (err) {
         console.error(err);
         alert("Error: " + err.message);
