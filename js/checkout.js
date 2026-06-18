@@ -89,7 +89,7 @@ async function processCheckout() {
     // Cambiar estado del botón para que el usuario sepa que está cargando ------------------------------------
     btn.innerText = "PROCESANDO PEDIDO...";
     btn.ariaDisabled = true;
-    btn.calssList.add('opacity-50', 'cursor-wait');
+    btn.classList.add('opacity-50', 'cursor-wait');
 
     const orderRequest = {
         userId: localStorage.getItem('userId') || null,
