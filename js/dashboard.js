@@ -126,10 +126,11 @@ async function showOrderDetail(orderId) {
     }
 }
 
+// === NUEVA LÓGICA DE PERFIL ===
+
 async function loadProfile() {
     const token = localStorage.getItem('token');
     
-    // Rellenamos desde LocalStorage primero para velocidad
     fillInputField('profile-fullname', localStorage.getItem('fullName'));
     fillInputField('profile-dni', localStorage.getItem('dni'));
     fillInputField('profile-phone', localStorage.getItem('phoneNumber'));
@@ -137,12 +138,10 @@ async function loadProfile() {
     fillInputField('profile-city', localStorage.getItem('city'));
     fillInputField('profile-cp', localStorage.getItem('cp'));
 
-    // Actualizamos con datos frescos del servidor
     try {
         const response = await fetch('https://localhost:7073/api/Profile/address', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
         if (response.ok) {
             const data = await response.json();
             fillInputField('profile-fullname', data.fullName);
@@ -155,15 +154,144 @@ async function loadProfile() {
     } catch (err) {
         console.warn("No se pudieron refrescar datos del perfil.");
     }
+
+    // Activamos validación en vivo y autorellenado de dirección
+    setupRealTimeValidation('profile-phone', 'profile-dni', 'profile-phone-error', 'profile-dni-error');
+    setupAddressAutocomplete('profile-address', 'profile-city', 'profile-cp');
 }
 
 function fillInputField(id, value) {
-    const element = document.getElementById(id);
-    if (element && value) { // Solo rellenamos si hay valor para no sobrescribir vacío
-        element.value = value;
-    }
+    const el = document.getElementById(id);
+    if (el && value) el.value = value;
 }
 
+// Nuevo Autocompletado Profesional con Menú Desplegable (Texto Limpio)
+function setupAddressAutocomplete(addressId, cityId, cpId) {
+    const addressInput = document.getElementById(addressId);
+    const cityInput = document.getElementById(cityId);
+    const cpInput = document.getElementById(cpId);
+
+    if (!addressInput || !cityInput || !cpInput) return;
+
+    // 1. Crear el contenedor del menú desplegable de sugerencias
+    const dropdown = document.createElement('ul');
+    dropdown.className = 'absolute z-50 w-full bg-[#0f172a] border border-white/10 rounded-xl mt-1 max-h-60 overflow-y-auto hidden shadow-2xl font-mono text-sm';
+    
+    addressInput.parentNode.insertBefore(dropdown, addressInput.nextSibling);
+    let debounceTimer;
+
+    addressInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        const val = addressInput.value.trim();
+
+        if (val.length < 4) {
+            dropdown.classList.add('hidden');
+            return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+            try {
+                dropdown.innerHTML = '<li class="px-4 py-3 text-slate-500 animate-pulse">Buscando...</li>';
+                dropdown.classList.remove('hidden');
+
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=es&limit=5&q=${encodeURIComponent(val)}`, {
+                    headers: { 'Accept-Language': 'es' }
+                });
+                const data = await res.json();
+
+                dropdown.innerHTML = ''; 
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer border-b border-white/5 last:border-0 transition-colors text-slate-300';
+                        
+                        const details = item.address;
+                        
+                        // --- AQUÍ ESTÁ LA MAGIA DEL TEXTO LIMPIO ---
+                        const street = details.road || details.pedestrian || details.street || item.name || '';
+                        const houseNumber = details.house_number || '';
+                        const city = details.province || details.state || details.city || details.town || details.village || '';
+                        const cp = details.postcode || '';
+
+                        // Construimos la calle con el número si lo hay
+                        const streetDisplay = houseNumber ? `${street}, ${houseNumber}` : street;
+                        
+                        // Construimos la frase final para el desplegable
+                        let shortName = streetDisplay;
+                        if (city) shortName += ` - ${city}`;
+                        if (cp) shortName += ` (${cp})`;
+                        
+                        // Fallback por si Nominatim nos devuelve algo raro
+                        if (!shortName.trim()) shortName = item.display_name.split(',')[0];
+
+                        // Asignamos el nombre corto y bonito al desplegable
+                        li.innerText = shortName;
+                        // ------------------------------------------
+
+                        // Lo que pasa al hacer CLIC en una sugerencia
+                        li.addEventListener('click', () => {
+                            // Rellenar los inputs limpios
+                            addressInput.value = streetDisplay;
+                            cityInput.value = city;
+                            cpInput.value = cp;
+
+                            // Efecto de éxito visual
+                            cityInput.classList.add('border-emerald-500');
+                            cpInput.classList.add('border-emerald-500');
+                            setTimeout(() => {
+                                cityInput.classList.remove('border-emerald-500');
+                                cpInput.classList.remove('border-emerald-500');
+                            }, 1500);
+
+                            dropdown.classList.add('hidden');
+                        });
+                        
+                        dropdown.appendChild(li);
+                    });
+                } else {
+                    dropdown.innerHTML = '<li class="px-4 py-3 text-slate-500">No se encontraron resultados</li>';
+                }
+            } catch (e) {
+                console.error("Error en autocompletado:", e);
+                dropdown.innerHTML = '<li class="px-4 py-3 text-red-400">Error de conexión</li>';
+            }
+        }, 600); 
+    });
+
+    // Cerrar el menú si hacemos clic fuera
+    document.addEventListener('click', (e) => {
+        if (e.target !== addressInput && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+}
+
+// Lógica de bordes rojos en tiempo real
+function setupRealTimeValidation(phoneId, dniId, phoneErrorId, dniErrorId) {
+    const phoneInput = document.getElementById(phoneId);
+    const dniInput = document.getElementById(dniId);
+    const phoneRegex = /^\+?[0-9\s]{9,15}$/; 
+    const dniRegex = /^[XYZ]?\d{5,8}[A-Z]$/i; 
+
+    function validate(input, regex, errorId) {
+        if(!input) return;
+        const errorEl = document.getElementById(errorId);
+        input.addEventListener('input', () => {
+            if (input.value.length > 0 && !regex.test(input.value.replace(/\s/g, ''))) {
+                errorEl.classList.remove('hidden');
+                input.classList.add('border-red-500');
+            } else {
+                errorEl.classList.add('hidden');
+                input.classList.remove('border-red-500');
+            }
+        });
+    }
+    validate(phoneInput, phoneRegex, phoneErrorId);
+    validate(dniInput, dniRegex, dniErrorId);
+}
+
+// Guardado del Perfil
 async function saveProfile() {
     const token = localStorage.getItem('token');
     const payload = {
@@ -175,27 +303,34 @@ async function saveProfile() {
         postalCode: document.getElementById('profile-cp').value
     };
 
-    const response = await fetch('https://localhost:7073/api/Profile/address', {
-        method: 'PUT',
-        headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify(payload)
-    });
+    const btn = document.getElementById('save-profile-btn');
+    btn.innerText = "GUARDANDO...";
+    btn.disabled = true;
 
-    if (response.ok) {
-        // --- SINCRONIZACIÓN CON LOCALSTORAGE ---
-        localStorage.setItem('fullName', payload.fullName);
-        localStorage.setItem('dni', payload.dni);
-        localStorage.setItem('phoneNumber', payload.phoneNumber);
-        localStorage.setItem('address', payload.address);
-        localStorage.setItem('city', payload.city);
-        localStorage.setItem('cp', payload.postalCode);
-        
-        alert("Datos guardados correctamente");
-    } else {
-        alert("Error al guardar los datos.");
+    try {
+        const response = await fetch('https://localhost:7073/api/Profile/address', {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            localStorage.setItem('fullName', payload.fullName);
+            localStorage.setItem('dni', payload.dni);
+            localStorage.setItem('phoneNumber', payload.phoneNumber);
+            localStorage.setItem('address', payload.address);
+            localStorage.setItem('city', payload.city);
+            localStorage.setItem('cp', payload.postalCode);
+            alert("Datos guardados correctamente");
+        } else {
+            const errorText = await response.text();
+            throw new Error(errorText || "Error al guardar los datos.");
+        }
+    } catch(e) { 
+        alert(e.message); 
+    } finally { 
+        btn.innerText = "GUARDAR CAMBIOS"; 
+        btn.disabled = false; 
     }
 }
 
