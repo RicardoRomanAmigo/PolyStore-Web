@@ -1,29 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | PolyStore</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://js.stripe.com/v3"></script> <!--nuevo script de stripe------------------------------------------------------------------------------------------->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body {
-            background-color: #0f172a;
-            color: white;
-            font-family: sans-serif;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
+        body { background-color: #0f172a; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
     </style>
 </head>
-
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
     <header class="flex justify-between items-center py-6 px-8 border-b border-white/10">
         <div class="flex items-center gap-6">
@@ -35,65 +23,75 @@
         <div id="auth-section" class="text-sm font-bold"></div>
     </header>
 
-    <div id="login-modal"
-        class="fixed inset-0 bg-[#0f172a]/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+    <div id="login-modal" class="fixed inset-0 bg-[#0f172a]/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
         <div class="glass p-10 rounded-3xl max-w-sm w-full border border-white/10 shadow-2xl">
             <h2 class="text-3xl font-black mb-8 tracking-tighter">ENTRAR</h2>
             <form id="login-form" class="space-y-4">
-                <input type="email" id="login-email" placeholder="Email"
-                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all text-sm">
-                <input type="password" id="login-password" placeholder="Contraseña"
-                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all text-sm">
-                <button type="submit"
-                    class="w-full bg-blue-600 py-4 rounded-2xl font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">ACCEDER</button>
-                <button type="button" onclick="closeLoginModal()"
-                    class="w-full text-xs text-slate-500 hover:text-white transition-all pt-2">CANCELAR</button>
+                <input type="email" id="login-email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all text-sm">
+                <input type="password" id="login-password" placeholder="Contraseña" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all text-sm">
+                <button type="submit" class="w-full bg-blue-600 py-4 rounded-2xl font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">ACCEDER</button>
+                <button type="button" onclick="closeLoginModal()" class="w-full text-xs text-slate-500 hover:text-white transition-all pt-2">CANCELAR</button>
             </form>
         </div>
     </div>
 
-    <main class="max-w-5xl mx-auto p-6 lg:p-12">
-        <h2 class="text-3xl font-black uppercase tracking-tight mb-8">Finalizar <span
-                class="text-slate-600">Compra</span></h2>
+    <main class="max-w-5xl mx-auto p-6 lg:p-12 flex-grow">
+        <h2 class="text-3xl font-black uppercase tracking-tight mb-8">Finalizar <span class="text-slate-600">Compra</span></h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <section class="glass p-8 rounded-3xl space-y-4">
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+            <section class="glass p-8 rounded-3xl space-y-6">
+                <h3 class="text-lg font-bold flex items-center gap-2 mb-4">
                     <i class="fa-solid fa-truck text-blue-500"></i> Datos de Envío
                 </h3>
-                <input type="text" id="checkout-email" placeholder="Correo Electrónico"
-                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
-                <input type="text" id="checkout-fullname" placeholder="Nombre Completo"
-                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
-                <input type="text" id="checkout-dni" placeholder="DNI / NIE"
-                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
-                <input type="tel" id="checkout-phone" placeholder="Número de teléfono"
-                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
-                <input type="text" id="checkout-address" placeholder="Dirección completa"
-                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                
+                <div class="relative">
+                    <input type="text" id="checkout-email" placeholder="Correo Electrónico" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                    <p id="checkout-email-error" class="hidden text-red-500 text-[10px] mt-1 absolute -bottom-4 left-2">El formato del email no es válido.</p>
+                </div>
+
+                <input type="text" id="checkout-fullname" placeholder="Nombre Completo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="checkout-city" placeholder="Ciudad"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
-                    <input type="text" id="checkout-cp" placeholder="Código Postal"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                    <div class="relative">
+                        <input type="text" id="checkout-dni" placeholder="DNI / NIE" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                        <p id="checkout-dni-error" class="hidden text-red-500 text-[10px] mt-1 absolute -bottom-4 left-2">Formato inválido.</p>
+                    </div>
+                    <div class="relative">
+                        <input type="tel" id="checkout-phone" placeholder="Teléfono" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                        <p id="checkout-phone-error" class="hidden text-red-500 text-[10px] mt-1 absolute -bottom-4 left-2">Teléfono inválido.</p>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="checkout-address" placeholder="Dirección completa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="checkout-city" placeholder="Provincia / Ciudad" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
+                    <input type="text" id="checkout-cp" placeholder="Código Postal" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition">
                 </div>
             </section>
 
-            <section class="glass p-8 rounded-3xl space-y-6">
-                <h3 class="text-lg font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-bag-shopping text-blue-500"></i> Resumen del pedido
-                </h3>
-                <div id="checkout-summary" class="space-y-4 text-slate-400"></div>
-                <div class="border-t border-white/10 pt-4 flex justify-between items-center text-xl font-black">
-                    <span>TOTAL</span>
-                    <span id="checkout-total" class="text-blue-400">0.00€</span>
+            <section class="glass p-8 rounded-3xl space-y-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold flex items-center gap-2 mb-6">
+                        <i class="fa-solid fa-bag-shopping text-blue-500"></i> Resumen del pedido
+                    </h3>
+                    <div id="checkout-summary" class="space-y-4 text-slate-400"></div>
                 </div>
-                <div id="stripe-payment-element" class="mt-4 mb-4 hidden">  <!--nuevo contenedor vacio-------------------------------------------------------------------------->
+                
+                <div class="mt-auto space-y-6">
+                    <div class="border-t border-white/10 pt-4 flex justify-between items-center text-xl font-black">
+                        <span>TOTAL</span>
+                        <span id="checkout-total" class="text-blue-400">0.00€</span>
+                    </div>
+                    
+                    <div id="stripe-payment-element" class="hidden my-4"></div>
+                    
+                    <button id="main-checkout-btn" onclick="processCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold transition-all transform hover:scale-[1.02]">
+                        PAGAR AHORA
+                    </button>
                 </div>
-                <button id="main-checkout-btn" onclick="processCheckout()"
-                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold transition-all transform hover:scale-[1.02]"> <!--actualizamos el boton-------------->
-                    PAGAR AHORA
-                </button>
             </section>
         </div>
     </main>
@@ -105,11 +103,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
             const loginForm = document.getElementById('login-form');
-            if (loginForm) {
-                loginForm.addEventListener('submit', handleLogin);
-            }
+            if (loginForm) loginForm.addEventListener('submit', handleLogin);
         });
     </script>
 </body>
-
 </html>
